@@ -1,4 +1,4 @@
-Processing sparkfun_redboard (platform: atmelavr; board: sparkfun_redboard; framework: arduino; build_unflags: -Os -std=gnu++11)
+Processing sparkfun_redboard (platform: atmelavr; board: sparkfun_redboard; framework: arduino; build_unflags: -Os)
 --------------------------------------------------------------------------------
 CONFIGURATION: https://docs.platformio.org/page/boards/atmelavr/sparkfun_redboard.html
 PLATFORM: Atmel AVR 2.2.0 > SparkFun RedBoard
@@ -13,7 +13,7 @@ Found 5 compatible libraries
 Scanning dependencies...
 No dependencies
 Building in release mode
-avr-g++ -o .pio/build/sparkfun_redboard/src/sol.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -Wall -ffunction-sections -fdata-sections -flto -mmcu=atmega328p -DPLATFORMIO=40304 -DARDUINO_AVR_REDBOARD -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/cores/arduino -I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/variants/standard src/sol.cpp
+avr-g++ -o .pio/build/sparkfun_redboard/src/sol.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -Wall -ffunction-sections -fdata-sections -flto -mmcu=atmega328p -DPLATFORMIO=40304 -DARDUINO_AVR_REDBOARD -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/cores/arduino -I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/variants/standard src/sol.cpp
 avr-g++ -o .pio/build/sparkfun_redboard/firmware.elf -mmcu=atmega328p -Wl,--gc-sections -flto -fuse-linker-plugin .pio/build/sparkfun_redboard/src/sol.cpp.o -L.pio/build/sparkfun_redboard -Wl,--start-group .pio/build/sparkfun_redboard/libFrameworkArduinoVariant.a .pio/build/sparkfun_redboard/libFrameworkArduino.a -lm -Wl,--end-group
 avr-objcopy -O ihex -R .eeprom .pio/build/sparkfun_redboard/firmware.elf .pio/build/sparkfun_redboard/firmware.hex
 MethodWrapper(["checkprogsize"], [".pio/build/sparkfun_redboard/firmware.elf"])
@@ -31,4 +31,4 @@ section                    size      addr
 .debug_line                  26         0
 .debug_str                  520         0
 Total                      3811
-========================= [SUCCESS] Took 0.94 seconds =========================
+========================= [SUCCESS] Took 1.17 seconds =========================

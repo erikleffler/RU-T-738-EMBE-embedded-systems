@@ -3,29 +3,23 @@ clang
 %c -std=c11
 %cpp -std=c++11
 
--I/Users/erikleffler1/programming/ru-courses/embedded-systems/test/include
--I/Users/erikleffler1/programming/ru-courses/embedded-systems/test/src
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/cores/arduino/api/deprecated
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/cores/arduino
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/variants/uno2018
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/libraries/EEPROM/src
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/libraries/HID/src
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/libraries/SPI/src
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/libraries/SoftwareSerial/src
--I/Users/erikleffler1/.platformio/packages/framework-arduino-megaavr/libraries/Wire/src
--I/Users/erikleffler1/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/7.3.0/include
--I/Users/erikleffler1/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/7.3.0/include-fixed
--I/Users/erikleffler1/.platformio/packages/toolchain-atmelavr/avr/include
+-I/Users/erikleffler1/programming/ru-courses/embedded-systems/asn1.2/include
+-I/Users/erikleffler1/programming/ru-courses/embedded-systems/asn1.2/src
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/cores/arduino
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/variants/standard
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/libraries/HID/src
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/libraries/SPI/src
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src
+-I/Users/erikleffler1/.platformio/packages/framework-arduino-avr/libraries/Wire/src
+-I/Users/erikleffler1/.platformio/packages/toolchain-atmelavr@1.50400.190710/lib/gcc/avr/5.4.0/include
+-I/Users/erikleffler1/.platformio/packages/toolchain-atmelavr@1.50400.190710/lib/gcc/avr/5.4.0/include-fixed
+-I/Users/erikleffler1/.platformio/packages/toolchain-atmelavr@1.50400.190710/avr/include
 -I/Users/erikleffler1/.platformio/packages/tool-unity
 
 -DPLATFORMIO=40304
--DARDUINO_AVR_UNO_WIFI_REV2
--DUNO_WIFI_REV2_328MODE
--DMILLIS_USE_TIMERB3
+-DARDUINO_AVR_REDBOARD
 -DF_CPU=16000000L
--DARDUINO_ARCH_MEGAAVR
+-DARDUINO_ARCH_AVR
 -DARDUINO=10808
--DUSB_VID=0x03eb
--DUSB_PID=0x2145
--DUSB_PRODUCT=&quot;Arduino Uno WiFi Rev2&quot;
--DUSB_MANUFACTURER=&quot;Arduino&quot;
+-D__AVR_ATmega328P__

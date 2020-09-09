@@ -1,0 +1,25 @@
+
+Problem 1
+
+The memory when using simba is:
+
+	RAM:   [===       ]  26.1% (used 535 bytes from 2048 bytes)
+	Flash: [===       ]  27.5% (used 8878 bytes from 32256 bytes)
+
+XXXXXX COMPARE TO ASN1.2
+
+Problem 2
+
+2.1:
+As the main function exits, so does the operating system
+
+2.2:
+The schedueler never initiates a context switch to the pin task. The main task is left to execute forever.
+
+2.3:
+The main task never goes from executing to waiting.
+
+2.4:
+when sleep is called, the main task blocks, leaving cpu time for the led task.
+
+The operating system must be cooperative. The main task itself has to initiate a blocking statement, signaling the operating system for a context switch.

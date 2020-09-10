@@ -48,24 +48,25 @@ int main()
     /* Set standard output to the UART. */
     sys_set_stdout(&uart.chout);
 
-
 	thrd_module_init();
 
 	struct sem_t button_sem;
 	sem_init(&button_sem, 0, 1);
 
 	struct thread_shared_variables {
-		sem_t sem;
+		sem_t button_sem;
+		bool should_toggle;
 	};
 
 	struct thread_shared_variables args = {
-		button_sem
+		button_sem,
+		false
 	};
 
 	thrd_t* led_thrd = thrd_spawn(
 		led_blink_task, 
 		(void*)&args,
-		50,
+		81,
 		led_stack,
 		sizeof(led_stack)
 	);
@@ -78,9 +79,8 @@ int main()
 		sizeof(button_stack)
 	);
 
-	while(1) {
-		thrd_sleep_ms(10000);
-	};
+	thrd_suspend(NULL);
+
 
 	return 0;
 }

@@ -4,11 +4,18 @@
 class Timer {
 	
 	public:
+		
+		void init(
+			float frequency, 
+			float duty_cycle
+		);
 
-		void init(float frequency);
+		void set_duty_cycle(float duty_cycle);
 
 	private:
 
 		float frequency;
+		float duty_cycle;
+
 };
 

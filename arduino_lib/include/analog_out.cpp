@@ -7,20 +7,15 @@ void AnalogOut::init(uint8_t pin) {
 	this->digital_out = DigitalOut();
 	this->digital_out.init(this->pin);
 
-	this->timer = Timer(); // Start off
+	this->timer = Timer1(); // Start off
 
-	this->timer.init(
-		100,
-		0
-	);
+	this->timer.init(300);
 }
 
 
 void AnalogOut::set_val(uint8_t value) {
 
 	if(!this->disco) {
-		// Analog read outputs 8 bit value, so we will accept a 8 bit
-		// value for simplicity
 		this->timer.set_duty_cycle(value / 255.0);
 	} else {
 		delay(500);

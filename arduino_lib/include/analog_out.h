@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include "timer.h"
+#include "timer_1.h"
 #include "digital_out.h"
 
 class AnalogOut {
@@ -25,6 +25,6 @@ class AnalogOut {
 
 		uint8_t pin;
 		DigitalOut digital_out;
-		Timer timer;
+		Timer1 timer;
 };
 

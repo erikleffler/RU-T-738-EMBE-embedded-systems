@@ -1,14 +1,16 @@
 #include <Arduino.h>
+#include "../../arduino_lib/include/timer_1.h"
 
+class Context;
 class State {
 
 	public:
 
-		virtual void go() {};
+		virtual void go(Context* c) {};
 
-		virtual void stop() {};
+		virtual void stop(Context* c) {};
 
-		virtual void timeout() {};
+		virtual void timeout(Context* c) {};
 
 		void enter();
 
@@ -16,17 +18,68 @@ class State {
 
 	private:
 
-		static String id;
-}
+		String id;
+};
+
+class Context
+{
+	public:
+
+		Context();
+
+		void setCurrent(State *s);
+
+		void parseEvent(String event);
+
+		bool timeout;
+
+	private:
+
+		State *current;
+
+};
+
+
 
 class Red : public State {
-		virtual void go();
-}
+
+	public:
+
+		Red();
+		~Red();
+
+		virtual void go(Context* c);
+
+	private:
+
+		String id;
+};
 
 class Yellow : public State {
-		virtual void timeout();
-}
+
+	public:
+
+		Yellow();
+		~Yellow();
+
+		virtual void timeout(Context* c);
+
+		static Timer1 timer;
+
+	private:
+
+		String id;
+};
 
 class Green : public State {
-		virtual void stop();
-}
+
+	public:
+
+		Green();
+		~Green();
+
+		virtual void stop(Context* c);
+	private:
+
+		String id;
+};

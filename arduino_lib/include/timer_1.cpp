@@ -73,3 +73,15 @@ void Timer1::set_duty_cycle(float duty_cycle) {
 	OCR1B = (int)(duty_cycle * OCR1A);
 }
 
+void Timer1::disable() {
+	TIMSK1 &= ~(1 << OCIE1A);  // Disable Timer2 interrupts.
+	TIMSK1 &= ~(1 << OCIE1B);  // Disable Timer2 interrupts.
+}
+
+void Timer1::enable() {
+	TIMSK1 |= (1 << OCIE1A);    // enable timer compare interrupt:
+	TIMSK1 |= (1 << OCIE1B);    // enable timer compare interrupt:
+	TIFR1 = 0;       			// clear  any pending interrupt
+	TCNT1 = 0;                  // clear the timer value
+}
+

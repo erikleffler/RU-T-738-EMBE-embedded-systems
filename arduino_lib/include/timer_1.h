@@ -13,6 +13,10 @@ class Timer1 {
 
 		void set_duty_cycle(float duty_cycle);
 
+		void enable();
+
+		void disable();
+
 	private:
 
 		float frequency;

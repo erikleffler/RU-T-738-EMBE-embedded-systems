@@ -1,0 +1,21 @@
+@startuml
+
+[*] --> red
+
+red : entry / turn on red light
+red : exit / turn off red light
+yellow : entry / turn on yellow light
+yellow : entry / start timer
+yellow : exit / turn off yellow light
+green : entry / turn on green light
+green : exit / turn off green light
+
+red --> red : stop
+red --> green : go
+green --> green : go
+green --> yellow : stop
+yellow --> yellow : stop
+yellow --> yellow : go
+yellow --> red : timeout
+
+@enduml

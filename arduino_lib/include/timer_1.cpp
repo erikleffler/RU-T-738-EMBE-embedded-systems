@@ -27,7 +27,10 @@ void Timer1::set_compare_regs(float frequency) {
 		Serial.println("1024");
 		OCR1A = COMPARE_REG(1024, frequency);
 		TCCR1B |= (1 << CS12) | (1 << CS10);
+	} else {
+		Serial.println("fail");
 	}
+
 	OCR1B = OCR1A;
 }
 
@@ -35,25 +38,18 @@ void Timer1::init(float frequency) {
 
 	this->frequency = frequency;
 
-	noInterrupts();
 
 	TCCR1A = 0; // Clear timer1 settings
 	TCCR1B = 0; // :||
 	TCNT1 = 0; // Clear timer1
 
 	
+	TCCR1B |= (1 << WGM12); // clear the timer on compare match A (Mode 4, CTC on OCR1A)
 	// Set both compare registers with given freq
 	set_compare_regs(frequency);
 
-	TCCR1B |= (1 << WGM12); // clear the timer on compare match A (Mode 4, CTC on OCR1A)
     TIMSK1 |= (1 << OCIE1A); // set interrupt on compare match A
     TIMSK1 |= (1 << OCIE1B); // set interrupt on compare match B
-
-	TIMSK1 |= (1 << OCIE1A);  // enable timer compare on A interrupt
-	TIMSK1 |= (1 << OCIE1B);  // enable timer compare on B interrupt
-
-
-	interrupts();
 
 }
 

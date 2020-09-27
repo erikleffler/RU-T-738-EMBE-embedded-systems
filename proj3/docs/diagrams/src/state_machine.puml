@@ -1,0 +1,16 @@
+@startuml
+[*] -> Initialization
+Operational -> Initialization : reset
+
+Initialization : entry / Initialize serial connection
+Initialization : entry / Initialize harware registers for LED
+Initialization : entry / Initialize harware registers for variable resistor input
+Initialization : entry / Initialize timer for PWM
+Initialization : entry / Initialize timer for LED blinking
+
+Operational : entry / Open variable resistor input channel
+Operational : entry / Open LED output channel in PWM mode
+Operational : entry / Listen on serial
+
+
+@enduml

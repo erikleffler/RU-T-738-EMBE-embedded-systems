@@ -8,25 +8,37 @@ Context context;
 void setup() {
 
 	context = Context(new Initialization());
+	context.do_work();
 
 }
 
 void loop() {
 
+	delay(100);
+
+	char command = 0;
+	if(Serial.available()) {
+		command = Serial.read();
+	}
+	if(command = 'r') {
+	
+		Serial.println("r");
+	}
+
+}
+
+/*
+void loop() {
 
 	char command[MAX_COMMAND_LENGTH + 1] = {0};
 
 	Serial.print("Enter command: ");
-	delay(1000);
-	Serial.print(millis());
 
 	for(int i = 0; i < MAX_COMMAND_LENGTH; i++) {
-		Serial.flush();
 
 		while(!Serial.available()) {
 			delay(100);
 			context.do_work(); // do work until input available
-			Serial.flush();
 		}
 
 		command[i] = Serial.read();
@@ -38,8 +50,6 @@ void loop() {
 		}
 	}
 
-
 	context.process_cmd(command);
 
-
-}
+}*/

@@ -1,0 +1,8 @@
+clang
+
+# add this to support `.h` files as C++ headers
+%hpp -x
+%hpp c++-header
+
+# Includes
+-I/Users/erikleffler1/programming/ru-courses/embedded-systems/proj5/sshfs/part2/include

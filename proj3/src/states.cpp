@@ -7,8 +7,7 @@ constexpr int knob_pin = A4;
 // ###### State ######
 
 
-State::~State() {
-}
+State::~State() {}
 
 void State::set_context(Context *context) {
 	this->context_ = context;
@@ -31,6 +30,9 @@ Context::~Context() {
 }
 
 void Context::do_work() {
+	Serial.println(millis());
+	delay(100);
+	Serial.flush();
 	this->state_->do_work();
 }
 
@@ -46,14 +48,13 @@ void Context::transition_to(State *state) {
 	this->state_->on_entry();
 
 	Serial.println("Context: Transition");
-	Serial.flush();
 }
 
 void Context::process_cmd(char command[]) {
 	
-	/*if(command == "reset") {
+	if(strcmp(command, "reset") == 0) {
 		state_->on_reset();
-	}*/
+	}
 
 }
 
@@ -64,23 +65,24 @@ void Context::process_cmd(char command[]) {
 
 void Initialization::on_entry() {
 
-	Serial.begin(115200);
+	Serial.begin(9600);
 	Serial.setTimeout(-1);
   	while(!Serial);
 
 	Serial.println("Initialization / entry");
 	
-	/*
-	pinMode(led_pin, OUTPUT);
-	pinMode(knob_pin, INPUT);
-*/
+	
+//	pinMode(led_pin, OUTPUT);
+//	pinMode(knob_pin, INPUT);
+
+//	digitalWrite(led_pin, LOW);
 
 
 }
 
 void Initialization::do_work() {
-
 	this->context_->transition_to(new PreOperational());
+
 }
 
 void Initialization::on_exit() {
@@ -102,15 +104,16 @@ void PreOperational::on_entry() {
 void PreOperational::do_work() {
 
 
+	/*
 
-/*
-	delay(1000);
 	uint64_t current_millis = millis();
+	
 	if(current_millis - this->prev_millis >= this->millis_to_wait) {
 
 		this->prev_millis = current_millis;
 
-		digitalWrite(led_pin, !digitalRead(led_pin)); // toggle
+		//digitalWrite(led_pin, !digitalRead(led_pin)); // toggle
+//		digitalWrite(led_pin, HIGH);
 	}
 	*/
 }

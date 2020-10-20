@@ -16,6 +16,7 @@ private:
 	inline void circular_increment(int **p);
 	int *start;
 	int *end;
+	int bad_end; // For bad_fifo implementation
     int buffer[FIFO_SIZE];
 	bool last_was_get; // Keep track if last call was to get or put.
 					   // This helps to distinguish is_full() and is_empty().

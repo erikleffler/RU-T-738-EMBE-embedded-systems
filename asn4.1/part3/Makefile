@@ -3,6 +3,9 @@ vpath %.h ../include
 INC=-I./include/
 LIB=-lpthread
 
+CC=g++
+CFLAGS=$(INC) $(LIB)
+
 OBJ=main.o increment_task.o decrement_task.o fifo.o
 
 default: main

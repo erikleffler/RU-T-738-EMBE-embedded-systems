@@ -1,0 +1,7 @@
+The following delays were measured:
+
+ * sh gpio: 5.95 milliseconds 
+ * userspace sysfs gpio in C: 119 microseconds
+ * kernelspace gpio in C: 27 microseconds
+
+Video: https://www.youtube.com/watch?v=9fR5ZYv4BTk&ab_channel=ErikLeffler

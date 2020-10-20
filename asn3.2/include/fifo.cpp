@@ -6,8 +6,8 @@ Fifo::Fifo() : start(buffer), end(buffer), last_was_get(true)
 
 }
 
-inline void Fifo::circular_increment(int **p) {
-
+inline void Fifo::circular_increment(int **p)
+{
 	*p += 1;
 	if(*p == (this->buffer + FIFO_SIZE)) {
 		*p = this->buffer;
@@ -45,13 +45,11 @@ bool Fifo::is_empty()
 
 bool Fifo::is_full()
 {
-
     return this->start == this->end && !this->last_was_get;
 }
 
 void Fifo::reset()
 {
-
 	this->start = buffer;
 	this->end = buffer;
 	this->last_was_get = true;

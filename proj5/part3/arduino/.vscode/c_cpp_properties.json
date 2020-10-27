@@ -6,8 +6,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part2/arduino/include",
-                "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part2/arduino/src",
+                "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part3/arduino/include",
+                "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part3/arduino/src",
                 "C:/Users/z003xfeb.AD001/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/z003xfeb.AD001/.platformio/packages/framework-arduino-avr/variants/standard",
                 "C:/Users/z003xfeb.AD001/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -21,8 +21,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part2/arduino/include",
-                    "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part2/arduino/src",
+                    "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part3/arduino/include",
+                    "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part3/arduino/src",
                     "C:/Users/z003xfeb.AD001/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/z003xfeb.AD001/.platformio/packages/framework-arduino-avr/variants/standard",
                     "C:/Users/z003xfeb.AD001/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",

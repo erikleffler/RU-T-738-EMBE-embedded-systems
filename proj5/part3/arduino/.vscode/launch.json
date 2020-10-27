@@ -12,7 +12,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part2/arduino/.pio/build/board1/firmware.elf",
+            "executable": "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part3/arduino/.pio/build/board1/firmware.elf",
             "toolchainBinDir": "C:/Users/z003xfeb.AD001/.platformio/packages/toolchain-atmelavr/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -24,7 +24,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part2/arduino/.pio/build/board1/firmware.elf",
+            "executable": "d:/UserData/z003xfeb/Documents/PlatformIO/Projects/RU-T-738-EMBE-embedded-systems/proj5/part3/arduino/.pio/build/board1/firmware.elf",
             "toolchainBinDir": "C:/Users/z003xfeb.AD001/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }

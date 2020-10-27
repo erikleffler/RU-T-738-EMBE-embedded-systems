@@ -1,6 +1,10 @@
 #include "timer0.hpp"
 
+
+
 namespace atmega328p {
+
+uint_fast16_t Timer0::prescaler;
 
 void Timer0::clear() {
     // Clear pending interrupts

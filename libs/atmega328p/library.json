@@ -1,0 +1,11 @@
+{
+    "name": "atmega328",
+    "version": "0.0.0",
+	"build" : {
+		"srcDir" : "src",
+		"includeDir" : "include",
+		"flags" : "-O3"
+	},
+	"frameworks": "*",
+	"platforms": "*"
+}

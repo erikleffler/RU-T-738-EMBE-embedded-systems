@@ -8,46 +8,46 @@ namespace atmega328p {
 class Timer0 {
  public:
     // Modes
-    inline static void clear();
-    inline static void initCtc();
-    inline static void initPwm();
+    static void clear();
+    static void initCtc();
+    static void initPwm();
 
     // Compare registers
-    inline static void setCmpA(const uint8_t compare);
-    inline static void setCmpB(const uint8_t compare);
+    static void setCmpA(const uint8_t compare);
+    static void setCmpB(const uint8_t compare);
 
-    inline static void enableCmpAInterrupt();
-    inline static void disableCmpAInterrupt();
+    static void enableCmpAInterrupt();
+    static void disableCmpAInterrupt();
 
-    inline static void enableCmpBInterrupt();
-    inline static void disableCmpBInterrupt();
+    static void enableCmpBInterrupt();
+    static void disableCmpBInterrupt();
 
-    inline static void enableOverflowInterrupt();
-    inline static void disableOverflowInterrupt();
+    static void enableOverflowInterrupt();
+    static void disableOverflowInterrupt();
 
     // Pins for hardware PWM
 
     // Pwm Pin A == oc0a == D6 on sparkfun redboard
-    inline static void disablePwmA();
-    inline static void togglePwmAOnMatch();
-    inline static void clearPwmAOnMatch();
-    inline static void setPwmAOnMatch();
+    static void disablePwmA();
+    static void togglePwmAOnMatch();
+    static void clearPwmAOnMatch();
+    static void setPwmAOnMatch();
 
     // Pwm Pin B == oc0b == D5 on sparkfun redboard
-    inline static void disablePwmB();
-    inline static void togglePwmBOnMatch();
-    inline static void clearPwmBOnMatch();
-    inline static void setPwmBOnMatch();
+    static void disablePwmB();
+    static void togglePwmBOnMatch();
+    static void clearPwmBOnMatch();
+    static void setPwmBOnMatch();
 
     // Prescaler settings
-    inline static void setPrescaler1();
-    inline static void setPrescaler8();
-    inline static void setPrescaler64();
-    inline static void setPrescaler256();
-    inline static void setPrescaler1024();
+    static void setPrescaler1();
+    static void setPrescaler8();
+    static void setPrescaler64();
+    static void setPrescaler256();
+    static void setPrescaler1024();
 
     // Getters
-    inline static uint_fast16_t getPrescaler();
+    static uint_fast16_t getPrescaler();
 
  private:
     static uint_fast16_t prescaler;

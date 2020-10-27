@@ -1,20 +1,21 @@
 #include "registers.hpp"
+#include "interrupts.hpp"
 #include "timer0.hpp"
 
-int xp;
+uint8_t cmpa = 0;
 
 int main() {
+    atmega328p::regs::portd6.setDirectionOutput();
     atmega328p::Timer0::initPwm();
-    atmega328p::Timer0::setCmpA(100);
-    atmega328p::Timer0::setPrescaler1();
-    atmega328p::Timer0::setPwmAOnMatch();
+    atmega328p::Timer0::setCmpA(cmpa);
+    atmega328p::Timer0::setCmpB(255);
+    atmega328p::Timer0::clearPwmAOnMatch();
+    atmega328p::Timer0::enableCmpBInterrupt();
+    atmega328p::Timer0::setPrescaler1024();
 
-    xp = 2;
-    int y = xp + 2;
-    while (true) {
-    }
-}
-void lol() {
-    int x = 2;
-    int y = 3
+	sei();
+
+	atmega328p::regs::portb5.setDirectionOutput();
+	atmega328p::regs::portb5.setHigh();
+	while(1) {}
 }

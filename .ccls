@@ -5,4 +5,4 @@ clang
 %hpp c++-header
 
 # Includes
--I/Users/erikleffler1/programming/ru-courses/embedded-systems/atmega328p/include/
+-I/Users/erikleffler1/programming/ru-courses/embedded-systems/libs/atmega328p/include/

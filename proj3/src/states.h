@@ -3,86 +3,64 @@
 class Context;
 
 class State {
+ public:
+    virtual ~State();
 
-	public:
+    void set_context(Context *context_);
 
-		virtual ~State();
+    virtual void do_work() = 0;
 
-		void set_context(Context *context_);
+    virtual void on_entry() = 0;
+    virtual void on_exit() = 0;
+    virtual void on_reset() = 0;
 
-		virtual void do_work() = 0;
-
-		virtual void on_entry() = 0;
-		virtual void on_exit() = 0;
-		virtual void on_reset() = 0;
-
-	protected:
-
-		Context *context_;
+ protected:
+    Context *context_;
 };
 
 class Context {
+ public:
+    Context();
 
-	public:
+    explicit Context(State *state);
 
-		Context();
+    ~Context();
 
-		Context(State *state);
+    void do_work();
 
-		~Context();
+    void transition_to(State *state);
 
-		void do_work();
+    void process_cmd(char command[]);
 
-		void transition_to(State *state);
+    State *state_;
 
-		void process_cmd(char command[]);
-
-		State *state_;
-
-	private:
-
-
+ private:
 };
 
 class Initialization : public State {
+ public:
+    void do_work() override;
 
+    void on_entry() override;
 
-	public:
+    void on_exit() override;
 
-		void do_work() override;
-
-		void on_entry() override;
-
-		void on_exit() override;
-
-		void on_reset() override {};
-
+    void on_reset() override{};
 };
 
 class PreOperational : public State {
+ public:
+    void do_work() override;
 
+    void on_entry() override;
 
-	public:
+    void on_exit() override;
 
-		void do_work() override;
+    void on_reset() override;
 
-		void on_entry() override;
+ private:
+    uint64_t prev_millis;
 
-		void on_exit() override;
-
-		void on_reset() override;
-
-	private:
-
-		uint64_t prev_millis;
-
-		static constexpr uint64_t millis_to_wait = 1000;
-
-		
-
+    static constexpr uint64_t millis_to_wait = 1000;
 };
-
-
-
-
 

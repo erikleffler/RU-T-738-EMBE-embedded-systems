@@ -1,3 +1,9 @@
+#ifndef _INTERRUPTS_HPP_
+#define _INTERRUPTS_HPP_
+
+#define sei() __asm__ __volatile__("sei" ::: "memory")
+#define cli() __asm__ __volatile__("cli" ::: "memory")
+
 #define _VECTOR(N) __vector_##N
 
 #define INT0_vect _VECTOR(1)          /* External Interrupt Request 0 */
@@ -26,7 +32,15 @@
 #define TWI_vect _VECTOR(24)          /* Two-wire Serial Interface */
 #define SPM_READY_vect _VECTOR(25)    /* Store Program Memory Read */
 
+#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
+#define __INTR_ATTRS used, externally_visible
+#else /* GCC < 4.1 */
+#define __INTR_ATTRS used
+#endif
+
 #define ISR(vector, ...)                                               \
     extern "C" void vector(void) __attribute__((signal, __INTR_ATTRS)) \
         __VA_ARGS__;                                                   \
     void vector(void)
+
+#endif // _INTERRUPTS_HPP_

@@ -78,7 +78,7 @@ const PortPin8<portd, 7> portd7;
 
 // Timer 0
 constexpr uint8_t tccr0a = UINT8_C(0x44);
-constexpr uint8_t tccr0b = UINT8_C(0x44);
+constexpr uint8_t tccr0b = UINT8_C(0x45);
 constexpr uint8_t tcnt0 = UINT8_C(0x46);
 constexpr uint8_t ocr0a = UINT8_C(0x47);
 constexpr uint8_t ocr0b = UINT8_C(0x48);

@@ -61,26 +61,35 @@ void handle_write()
     register_value_lower = int(msg[5]);
     register_value = register_value_higher << 8 | register_value_lower;
 
-    if (register_value >= 0 && register_value <= 255)
-    {                              // is it in range?
-        led_val = register_value;
-        analogWrite(ledPin, led_val);
-        
-        char data = char(led_val);
-        char packet[4] = {'\x03',
-                      '\x02',
-                      '\x00',
-                      data};
-        Serial.write(packet);
+    if (first_register == 1)
+    {
+        if (register_value >= 0 && register_value <= 255)
+        {                              // is it in range?
+            led_val = register_value;
+            analogWrite(ledPin, led_val);
+            
+            char data = char(led_val);
+            char packet[4] = {'\x03',
+                        '\x02',
+                        '\x00',
+                        data};
+            Serial.write(packet);
+        }
+        else
+        { // no, error message back
+            char packet[2] = {'\x86',
+                    '\x03'};
+            Serial.write(packet);
+        }
     }
-    else
-    { // no, error message back
+    else 
+    {
+        //fail
         char packet[2] = {'\x86',
-                '\x03'};
+                '\x02'};
         Serial.write(packet);
     }
 }
-
 
 void setup()
 {
@@ -112,6 +121,13 @@ void loop()
             {
                 handle_write();
             }
+            else
+            {
+                char packet[2] = {'\x86', // Invalid Function --> does not matter what is inside here
+                                '\x01'};
+                Serial.write(packet);
+            }
+            
         }
     }
 }

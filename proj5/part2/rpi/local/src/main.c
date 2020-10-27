@@ -29,39 +29,35 @@ int main(int argc, char *argv[]) {
 
     int option_index = 0;
 
-    opt = getopt_long(argc, argv, "abc:d:f:", long_options, &option_index);
+    opt = getopt_long(argc, argv, "c:d:v:", long_options, &option_index);
+    while (opt != 0xff) {
+        switch (opt) {
+            case 'c':
+                command = optarg[0];  // Just need first character to
+                                      // differentiate [R]ead from [W]rite
+                printf("Command: %c\n", command);
+                break;
 
-    /* Detect the end of the options. */
-    if (opt == -1) return -1;
+            case 'd':
+                device_address = atoi(optarg);
+                printf("Device address: %d\n", device_address);
+                break;
 
-    switch (opt) {
-        case 0:
-            /* If this option set a flag, do nothing else now. */
-            if (long_options[option_index].flag != 0) break;
-            printf("option %s", long_options[option_index].name);
-            if (optarg) printf(" with arg %s", optarg);
-            printf("\n");
-            break;
+            case 'v':
+                value = atoi(optarg);
+                printf("Value: %d\n", value);
+                break;
 
-        case 'c':
-            command = optarg[0];  // Just need first character to differentiate
-                                  // [R]ead from [W]rite
-            break;
-
-        case 'd':
-            device_address = atoi(optarg);
-            break;
-
-        case 'v':
-            value = atoi(optarg);
-            break;
-        default:
-            abort();
+            default:
+                printf("unknown argument %02x\n", opt);
+                return -1;
+        }
+        opt = getopt_long(argc, argv, "c:d:v:", long_options, &option_index);
     }
 
     // #### DONE WITH PARSE ####
 
-    if ((fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY)) < 0) {
+    if ((fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY)) < 0) {
         perror("UART: Failed to open the fd.\n");
         return -1;
     }
@@ -85,7 +81,13 @@ int main(int argc, char *argv[]) {
                    MAKE_16(response_buffer[0], response_buffer[1]));
         case 'w':
             writeSingleRegister(fd, device_address, 0x01, value);
+
+        default:
+            printf("Unknown command %c\n", opt);
+            return -1;
     }
+
+    close(fd);
 
     return 0;
 }

@@ -20,8 +20,6 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
         return -1;
     }
 
-    usleep(1000000);
-
     if (read(fd, &return_code, 1) != 1) {
         perror("Failed to read return code from received  packet\n");
         return -1;

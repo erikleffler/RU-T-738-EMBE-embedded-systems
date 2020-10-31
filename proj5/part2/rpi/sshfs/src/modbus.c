@@ -4,9 +4,16 @@
 #define LOWER_8(x) (x & 0xff)
 #define MAKE_16(higher, lower) (((uint16_t)higher << 8) | (uint16_t)lower)
 
+void inline printPacket(char* packet, size_t length) {
+    for (size_t i = 0; i < length; i++) {
+        printf(" %02x", packet[i]);
+    }
+    printf("\n");
+}
+
 uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
                              uint16_t first_register, uint16_t register_count) {
-    char recv_packet[8];
+    char recv_packet[7];
     char packet[8] = {(char)address,
                       '\x03',
                       (char)HIGHER_8(first_register),
@@ -18,11 +25,8 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
 
     setCrc(packet, sizeof(packet));
 
-    printf("Sending packet:\t");
-    for (size_t i = 0; i < sizeof(packet); i++) {
-        printf("%02x ", packet[i]);
-    }
-    printf("\n");
+    printf("Sending packet:");
+    printPacket(packet, sizeof(packet));
 
     if (write(fd, packet, sizeof(packet)) != sizeof(packet)) {
         perror("Failed to write read holding register packet\n");
@@ -66,11 +70,8 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
             return -1;
         }
 
-        printf("Recieved packet:\t");
-        for (size_t i = 0; i < sizeof(recv_packet); i++) {
-            printf("%02x ", recv_packet[i]);
-        }
-        printf("\n");
+        printf("Recieved packet: ");
+        printPacket(recv_packet, sizeof(recv_packet));
 
         if (verifyCrc(recv_packet, sizeof(recv_packet)) != 0) {
             return -1;
@@ -101,16 +102,15 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
 
     setCrc(packet, sizeof(packet));
 
-    printf("Sending packet:\t");
-    for (size_t i = 0; i < sizeof(packet); i++) {
-        printf("%02x ", packet[i]);
-    }
-    printf("\n");
+    printf("Sending packet: ");
+    printPacket(packet, sizeof(packet));
 
     if (write(fd, packet, sizeof(packet)) != sizeof(packet)) {
         perror("Failed to write write single register packet\n");
         return -1;
     }
+
+	usleep(10000);
 
     if (read(fd, recv_packet, 1) != 1) {
         perror("Failed to read unit address from received packet\n");
@@ -135,9 +135,9 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
 
     } else if (recv_packet[1] == '\x06') {  // Success
 
-        if (read(fd, recv_packet + 2, 6) != 2) {
+        if (read(fd, recv_packet + 2, 6) != 6) {
             perror(
-                "Failed to read contents of eceived  "
+                "Failed to read contents of received  "
                 "packet\n");
             return -1;
         }
@@ -160,6 +160,9 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
                     recv_value, value);
             return 1;
         }
+
+        printf("Recieved packet: ");
+        printPacket(recv_packet, sizeof(recv_packet));
 
         return verifyCrc(recv_packet, sizeof(recv_packet));
     }

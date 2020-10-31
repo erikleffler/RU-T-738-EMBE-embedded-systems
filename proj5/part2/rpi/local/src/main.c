@@ -15,16 +15,16 @@ int main(int argc, char *argv[]) {
     int fd;
     uint8_t device_address;
     uint16_t value;  // Value to write in case command is write
-    char command, opt;
-    char response_buffer[2];  // Only for response from read - 2 bytes since we
-                              // just read one register
+    unsigned char command, opt;
+    char response_buffer[2] = {0};  // Only for response from read - 2 bytes
+                                    // since we just read one register
 
     // #### PARSE ARGS ####
 
     static struct option long_options[] = {
         {"command", required_argument, NULL, 'c'},
         {"device", required_argument, NULL, 'd'},
-        {"value", optional_argument, NULL, 'v'},
+        {"value", required_argument, NULL, 'v'},
         {NULL, 0, NULL, 0}};
 
     int option_index = 0;
@@ -75,12 +75,18 @@ int main(int argc, char *argv[]) {
 
     switch (command) {
         case 'r':
-            readHoldingRegisters(response_buffer, fd, device_address, 0x01,
-                                 0x01);
-            printf("Read %04x\n",
-                   MAKE_16(response_buffer[0], response_buffer[1]));
+            if (readHoldingRegisters(response_buffer, fd, device_address, 0x01,
+                                     0x01) != 0) {
+                printf("Error on read command\n");
+            } else {
+                printf("Read %04x\n",
+                       MAKE_16(response_buffer[0], response_buffer[1]));
+            }
+            break;
+
         case 'w':
             writeSingleRegister(fd, device_address, 0x01, value);
+            break;
 
         default:
             printf("Unknown command %c\n", opt);

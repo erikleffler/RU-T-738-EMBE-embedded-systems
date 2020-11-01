@@ -227,14 +227,14 @@ void loop()
                 }
                 else
                 {
-                    char packet[2] = {'\x86', // Invalid Function --> does not matter what is inside here
+                    char packet[2] = {'\x80', // Invalid Function --> does not matter what is inside here
                                     '\x01'};
                     Serial.write(packet);
                 }
             }
             else
             {
-                char packet[2] = {'\x86', // Ilegal data value --> crc is incorrect
+                char packet[2] = {'\x80', // Ilegal data value --> crc is incorrect
                                 '\x03'};
                 Serial.write(packet);
             }         

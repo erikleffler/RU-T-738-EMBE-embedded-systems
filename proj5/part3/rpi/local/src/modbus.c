@@ -4,6 +4,10 @@
 #define LOWER_8(x) (x & 0xff)
 #define MAKE_16(higher, lower) (((uint16_t)higher << 8) | (uint16_t)lower)
 
+#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+
+
+
 void inline printPacket(char* packet, size_t length) {
     for (size_t i = 0; i < length; i++) {
         printf(" %02x", packet[i]);
@@ -11,7 +15,18 @@ void inline printPacket(char* packet, size_t length) {
     printf("\n");
 }
 
-uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
+int readBlockN(int fd, char* buffer, size_t n) {
+    int retval = 0;
+    for (int i = 0; i < n; i++) {
+        if ((retval = read(fd, buffer + i, 1)) != 1) {
+            return retval;
+        }
+    }
+    return n;
+}
+
+uint8_t readHoldingRegisters(char* response_buffer, size_t buffer_size,
+                             uint8_t fd, uint8_t address,
                              uint16_t first_register, uint16_t register_count) {
     char recv_packet[7];
     char packet[8] = {(char)address,
@@ -33,8 +48,11 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
         return -1;
     }
 
+    //usleep(1000000);
+
     if (read(fd, recv_packet, 1) != 1) {
         perror("Failed to read unit address from received packet\n");
+        // lseek(fd, SEEK_END, 0);
         return -1;
     }
 
@@ -42,11 +60,13 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
         fprintf(stderr,
                 "Response form wrong address. Expected: %02x, got: %02x\n",
                 address, recv_packet[0]);
+        // lseek(fd, SEEK_END, 0);
         return -1;
     }
 
     if (read(fd, recv_packet + 1, 1) != 1) {
         perror("Failed to read return code from received  packet\n");
+        // lseek(fd, SEEK_END, 0);
         return -1;
     }
 
@@ -58,15 +78,17 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
 
         if (read(fd, recv_packet + 2, 1) != 1) {
             perror("Failed to read number of bytes from received  packet\n");
+            // lseek(fd, SEEK_END, 0);
             return -1;
         }
 
         printf("n bytes: %d\n", recv_packet[2]);
 
         // 2 extra bytes for crc
-        if (read(fd, recv_packet + 3, recv_packet[2] + 2) !=
+        if (readBlockN(fd, recv_packet + 3, recv_packet[2] + 2) !=
             recv_packet[2] + 2) {
             perror("Failed to read bytes in packet packet\n");
+            // lseek(fd, SEEK_END, 0);
             return -1;
         }
 
@@ -74,15 +96,18 @@ uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
         printPacket(recv_packet, sizeof(recv_packet));
 
         if (verifyCrc(recv_packet, sizeof(recv_packet)) != 0) {
+            // lseek(fd, SEEK_END, 0);
             return -1;
         }
 
-        memcpy(response_buffer, recv_packet + 3, recv_packet[2]);
+        memcpy(response_buffer, recv_packet + 3,
+               MIN(recv_packet[2], buffer_size));
 
         return 0;
     }
 
     fprintf(stderr, "Error: unexpected return code 0x%02x\n", recv_packet[0]);
+    // lseek(fd, SEEK_END, 0);
     return 1;
 }
 
@@ -90,7 +115,7 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
                             uint16_t register_address, uint16_t value) {
     uint16_t recv_address, recv_value;
 
-    char recv_packet[8];
+    char recv_packet[8] = {0};
     char packet[8] = {(char)address,
                       '\x06',
                       (char)HIGHER_8(register_address),
@@ -110,10 +135,11 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
         return -1;
     }
 
-	usleep(10000);
+    //usleep(1000000);
 
     if (read(fd, recv_packet, 1) != 1) {
         perror("Failed to read unit address from received packet\n");
+        // lseek(fd, SEEK_END, 0);
         return -1;
     }
 
@@ -121,11 +147,13 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
         fprintf(stderr,
                 "Response form wrong address. Expected: %02x, got: %02x\n",
                 address, recv_packet[0]);
+        // lseek(fd, SEEK_END, 0);
         return -1;
     }
 
     if (read(fd, recv_packet + 1, 1) != 1) {
         perror("Failed to read return code from received packet\n");
+        // lseek(fd, SEEK_END, 0);
         return -1;
     }
 
@@ -134,11 +162,13 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
         return handleExceptionCode(fd, register_address, value);
 
     } else if (recv_packet[1] == '\x06') {  // Success
-
-        if (read(fd, recv_packet + 2, 6) != 6) {
+                                            //
+        if (readBlockN(fd, recv_packet + 2, 6) != 6) {
+            printPacket(recv_packet, 8);
             perror(
                 "Failed to read contents of received  "
                 "packet\n");
+            // lseek(fd, SEEK_END, 0);
             return -1;
         }
 
@@ -150,6 +180,7 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
                     "Recieved unexpected address after writeSingleRegister, "
                     "received: %04x, expected: %04x\n",
                     recv_address, register_address);
+            // lseek(fd, SEEK_END, 0);
             return 1;
         }
 
@@ -158,6 +189,7 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
                     "Recieved unexpected value after writeSingleRegister, "
                     "received: %04x, expected: %04x\n",
                     recv_value, value);
+            // lseek(fd, SEEK_END, 0);
             return 1;
         }
 
@@ -168,6 +200,7 @@ uint8_t writeSingleRegister(uint8_t fd, uint8_t address,
     }
 
     fprintf(stderr, "Error: unexpected return code %d\n", recv_packet[0]);
+    // lseek(fd, SEEK_END, 0);
     return 1;
 }
 
@@ -180,6 +213,7 @@ uint8_t handleExceptionCode(uint8_t fd, uint16_t first_argument,
         return -1;
     }
 
+    // lseek(fd, SEEK_END, 0);
     switch (exception_code) {
         case 1:
             fprintf(stderr, "Recieved error illegal function\n");

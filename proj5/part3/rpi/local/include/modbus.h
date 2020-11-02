@@ -8,7 +8,8 @@
 
 #include "crc.h"
 
-uint8_t readHoldingRegisters(char* response_buffer, uint8_t fd, uint8_t address,
+uint8_t readHoldingRegisters(char* response_buffer, size_t buffer_size,
+                             uint8_t fd, uint8_t address,
                              uint16_t first_register, uint16_t register_count);
 
 uint8_t writeSingleRegister(uint8_t fd, uint8_t address,

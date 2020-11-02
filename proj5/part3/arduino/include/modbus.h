@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <stdint.h>
+#include <context.h>
 
 #ifndef MODBUS_ADDRESS
 #define MODBUS_ADDRESS -1
@@ -19,12 +20,14 @@ class Modbus
         bool handle_crc(uint8_t msg[]);
         void setCrc(uint8_t* packet, size_t length);
         uint8_t verifyCrc(char* packet, size_t length);
-        void handle_read(uint8_t msg[]);
-        void handle_write(uint8_t msg[]);
-        void handle_input();
+        uint8_t handle_read(uint8_t msg[]);
+        uint8_t handle_write(uint8_t msg[]);
+        uint8_t handle_input();
+        void get_context(Context *context);
 
         uint8_t ledPin;
         uint8_t led_val;
+        Context *context_ptr;
 
     private:
 };

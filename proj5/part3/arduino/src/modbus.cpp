@@ -1,4 +1,5 @@
 #include <modbus.h>
+#include <filter.h>
 
 
 Modbus::Modbus()
@@ -6,6 +7,11 @@ Modbus::Modbus()
     ledPin = 13; // LED with PWM brightness control
     led_val = 0;
 }
+
+void Modbus::get_context(Context *context){
+    context_ptr = context;
+}
+
 // Set chosen pin to input
 uint16_t Modbus::ModRTU_CRC(uint8_t buf[], int len)
 {
@@ -67,7 +73,7 @@ uint8_t Modbus::verifyCrc(char* packet, size_t length)
     return 0;
 }
 
-void Modbus::handle_read(uint8_t msg[])
+uint8_t Modbus::handle_read(uint8_t msg[])
 {
     /*get register*/
     uint16_t first_register;
@@ -77,18 +83,33 @@ void Modbus::handle_read(uint8_t msg[])
     uint16_t register_count;
     register_count = MAKE_16(msg[4], msg[5]);
 
-    if(first_register == 1 && register_count == 1)
-    {
+    if(first_register == 3) // read photocell val
+    {      
         uint8_t packet[7] = {MODBUS_ADDRESS,
-                uint8_t(3),
+                3,
                 uint8_t(register_count*2),
-                uint8_t(0),
-                led_val,
+                0,
+                context_ptr->filter_ptr->photocell_val,
                 0,
                 0};
         
         setCrc(packet,sizeof(packet));
         Serial.write(packet, sizeof(packet));
+        return 30;
+    }
+    else if(first_register == 4) // read current state
+    {
+        uint8_t packet[7] = {MODBUS_ADDRESS,
+                3,
+                uint8_t(register_count*2),
+                0,
+                context_ptr->state_num,    // get current state and map it to a number
+                0,
+                0};
+        
+        setCrc(packet,sizeof(packet));
+        Serial.write(packet, sizeof(packet));
+        return 40;
     }
     else
     {
@@ -96,10 +117,11 @@ void Modbus::handle_read(uint8_t msg[])
         char packet[2] = {'\x83',
                 '\x02'};
         Serial.write(packet);
+        return 255;
     }
 }
 
-void Modbus::handle_write(uint8_t msg[])
+uint8_t Modbus::handle_write(uint8_t msg[])
 {
     /*get register*/
     uint16_t first_register;
@@ -109,46 +131,255 @@ void Modbus::handle_write(uint8_t msg[])
     uint16_t register_value;
     register_value = MAKE_16(msg[4], msg[5]);
 
-    if(first_register == 0)
+    if(first_register == 0) // get CANopen standard commands
     {
-
-    }
-    else if (first_register == 2)
-    {
-        if (register_value >= 0 && register_value <= 255)
-        {                              // is it in range?
-            led_val = register_value;
-            analogWrite(ledPin, led_val);       
-
+        if(register_value == 1) // set operational
+        {
             uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
                     6,
-                    HIGHER_8(first_register),
-                    LOWER_8(first_register),
-                    0,
-                    led_val,
+                    uint8_t(HIGHER_8(first_register)),
+                    uint8_t(LOWER_8(first_register)),
+                    uint8_t(HIGHER_8(register_value)),
+                    uint8_t(LOWER_8(register_value)),
                     0,
                     0};
         
             setCrc(packet,sizeof(packet));
             Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_operation();
+
+            return 1;
+        }
+        else if(register_value == 2)   // set stop
+        {
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    HIGHER_8(first_register),
+                    LOWER_8(first_register),
+                    HIGHER_8(register_value),
+                    LOWER_8(register_value),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_stop();
+
+            return 2;
+        }
+        else if(register_value == 80)   // set pre-operational
+        {
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    HIGHER_8(first_register),
+                    LOWER_8(first_register),
+                    HIGHER_8(register_value),
+                    LOWER_8(register_value),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_preoperation();
+
+            return 80;
+        }
+        else if(register_value == 81)   // reset node
+        {
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    HIGHER_8(first_register),
+                    LOWER_8(first_register),
+                    HIGHER_8(register_value),
+                    LOWER_8(register_value),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_reset();
+
+            return 81;
+        }
+        else if(register_value == 82)   // reset communications
+        {   
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    HIGHER_8(first_register),
+                    LOWER_8(first_register),
+                    HIGHER_8(register_value),
+                    LOWER_8(register_value),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_reset();
+
+            return 81;
         }
         else
-        { // no, error message back
+        { // illegal data value --> send error message
             char packet[2] = {'\x86',
                     '\x03'};
             Serial.write(packet);
+            return 255;
         }
+        
     }
+    else if(first_register == 1) // set configs
+    {
+        bool flip_read_mode = register_value & (1 << 0);
+        bool flip_write_mode = register_value & (1 << 1);
+        bool low_mode = register_value & (1 << 2);
+        bool high_mode = register_value & (1 << 3);
+        bool ambient_mode = register_value & (1 << 4);
+        
+        if(flip_read_mode) // flip mode - always read photocell (reader)
+        {    
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    uint8_t(HIGHER_8(first_register)),
+                    uint8_t(LOWER_8(first_register)),
+                    uint8_t(HIGHER_8(register_value)),
+                    uint8_t(LOWER_8(register_value)),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->is_reader = true;
+
+            return 10;
+        }
+        
+        if(flip_write_mode) // flip mode - always set led (blinker)
+        {   
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    uint8_t(HIGHER_8(first_register)),
+                    uint8_t(LOWER_8(first_register)),
+                    uint8_t(HIGHER_8(register_value)),
+                    uint8_t(LOWER_8(register_value)),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->is_reader = false;
+            return 11;
+        }
+        
+        if(low_mode) // low-mode
+        {
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    uint8_t(HIGHER_8(first_register)),
+                    uint8_t(LOWER_8(first_register)),
+                    uint8_t(HIGHER_8(register_value)),
+                    uint8_t(LOWER_8(register_value)),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_config_low();
+
+            return 12;
+        }
+        
+        if(high_mode) // high-mode
+        {
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    HIGHER_8(first_register),
+                    LOWER_8(first_register),
+                    HIGHER_8(register_value),
+                    LOWER_8(register_value),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+
+            context_ptr->command_config_high();
+
+            return 13;
+        }
+        
+        if(ambient_mode) // ambient-mode
+        {
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    uint8_t(HIGHER_8(first_register)),
+                    uint8_t(LOWER_8(first_register)),
+                    uint8_t(HIGHER_8(register_value)),
+                    uint8_t(LOWER_8(register_value)),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+            
+            context_ptr->command_config_ambient();
+            
+            return 14;
+        }
+        else
+        {   // illegal data value
+            char packet[2] = {'\x86',
+                            '\x03'};
+            Serial.write(packet);
+            return 255;
+        }      
+    }
+    else if (first_register == 2) // set LED
+    {
+        if (register_value >= 0 && register_value <= 255) // is it in range?
+        {
+            context_ptr->filter_ptr->photocell_val = register_value; // value is written during on do
+            //analogWrite(ledPin, led_val);       
+
+            uint8_t packet[MSG_LEN] = {MODBUS_ADDRESS,
+                    6,
+                    uint8_t(HIGHER_8(first_register)),
+                    uint8_t(LOWER_8(first_register)),
+                    uint8_t(HIGHER_8(register_value)),
+                    uint8_t(LOWER_8(register_value)),
+                    0,
+                    0};
+        
+            setCrc(packet,sizeof(packet));
+            Serial.write(packet, sizeof(packet));
+            return 20;
+        }
+        else
+        { // illegal data value
+            char packet[2] = {'\x86',
+                    '\x03'};
+            Serial.write(packet);
+            return 255;
+        }
+    }    
     else 
     {
-        //fail
+        // illegal function error
         char packet[2] = {'\x86',
                 '\x02'};
         Serial.write(packet);
+        return 255;
     }
 }
 
-void Modbus::handle_input()
+uint8_t Modbus::handle_input()
 {
     static_assert(MODBUS_ADDRESS != -1, "Modbus is not available");
     
@@ -163,17 +394,18 @@ void Modbus::handle_input()
             /*check function number*/
             if(msg[1] == 03)
             {
-                handle_read(msg);
+                return handle_read(msg);
             }
             else if(msg[1] == 06)
             {
-                handle_write(msg);
+                 return handle_write(msg);
             }
             else
             {
                 char packet[2] = {'\x80', // Invalid Function
                                 '\x01'};
                 Serial.write(packet);
+                return 255; // other suggestion? @EL
             }
         }
         else
@@ -181,6 +413,12 @@ void Modbus::handle_input()
             char packet[2] = {'\x80', // Ilegal data value --> crc is incorrect
                             '\x03'};
             Serial.write(packet);
+            return 255;
         }         
     }
+    else
+    {
+        return 0;
+    }
+    
 }

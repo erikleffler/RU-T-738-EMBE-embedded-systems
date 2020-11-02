@@ -8,7 +8,7 @@
 #include <modbus.h>
 
 // Create Objects
-Analog_out led(13);
+Analog_out led(PD5);
 Analog_in photocell(PC0);
 Filter filter;
 Context *context;
@@ -31,26 +31,41 @@ ISR(TIMER1_COMPA_vect) {
 
 void loop()
 {
-  int command = 0;
+  uint8_t command = 0;
 
   delay(100);
 
   context->getobjects(&photocell, &led, &filter, &timer);
+  modbus.get_context(context);
   context->do_work();
 
   if (Serial.available())
-    modbus.handle_input();  //command = Serial.read();
-
-  if (command == 'r')
-    context->command_reset();
-  else if(command == 'a')
-    context->command_config_ambient();
-  else if(command == 'h')
-    context->command_config_high();
-  else if(command == 'l')
-    context->command_config_low();
-  else if(command == 'o')
+    command = modbus.handle_input();
+    
+/*
+  if(command == 1)
     context->command_operation();
-  else if(command == 'p')
-    context->command_preoperation();   
+  else if (command == 2)
+    context->command_stop();
+  else if(command == 80)
+    context->command_preoperation();
+  else if (command == 81)
+    context->command_reset();   
+  else if(command == 10)
+    context->is_reader = true;
+  else if(command == 11)
+    context->is_reader = false;
+  else if(command == 12)
+    context->command_config_low();
+  else if(command == 13)
+    context->command_config_high();
+  else if(command == 14)
+    context->command_config_ambient();
+  //else if(command == 20)
+    // set led val
+  //else if(command == 30)
+    // read photocellval
+  //else if(command == 255)
+    // error occured
+    */
 }

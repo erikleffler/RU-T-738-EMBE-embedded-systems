@@ -11,6 +11,7 @@ Context::Context(State *state) : state_(nullptr)
     
     // set default mode
     mode = 2;   // ambient
+    state_num = 0;
 }
 
 Context::~Context()
@@ -28,7 +29,7 @@ void Context::getobjects(Analog_in *Photocell, Analog_out *Led, Filter *filter, 
 
 void Context::transition_to(State *state)
 {
-    Serial.println("Context: Transition");
+    //Serial.println("Context: Transition");
     if (this->state_ != nullptr)
     {
         this->state_->on_exit();

@@ -40,4 +40,6 @@ public:
   // attributes
   int8_t mode;
   bool last_was_operational;
+  bool is_reader;
+  uint8_t state_num;
 };

@@ -1,0 +1,6 @@
+clang
+
+%c -std=c11
+%cpp -std=c++11
+
+-I/Users/erikleffler1/programming/ru-courses/embedded-systems/proj5/part3/rpi/local/include
